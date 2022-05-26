@@ -1,0 +1,6 @@
+---
+- name: import jool installation task
+  ansible.builtin.import_tasks: jool-install-debian_based.yml
+
+- name: import jool configuration task
+  ansible.builtin.import_tasks: jool-configure.yml

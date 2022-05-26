@@ -1,0 +1,15 @@
+[Unit]
+Description=Jool, an open source implementation of IPv4/IPv6 translation on Linux. This service manages all Jool instances.
+Documentation=https://jool.mx/en/documentation.html
+Requires=jool@{{ _jool_instance_names | join(".service jool@") }}.service
+After=network.target
+After=jool@{{ _jool_instance_names | join(".service jool@") }}.service
+Conflicts=jool_siit.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+
+[Install]
+WantedBy=multi-user.target

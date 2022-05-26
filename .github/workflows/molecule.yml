@@ -1,0 +1,23 @@
+---
+name: Molecule
+on: push
+jobs:
+  molecule:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: ${{ github.repository }}
+
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.x"
+
+      - run: pip3 install pytest-molecule pytest-testinfra
+
+      - name: Run Molecule test
+        uses: gofrolist/molecule-action@v2
+        with:
+          molecule_command: test
+        env:
+          ANSIBLE_FORCE_COLOR: "1"

@@ -1,0 +1,26 @@
+---
+- name: push jool instance configuration
+  ansible.builtin.copy:
+    content: "{{ jool_config | from_yaml | to_nice_json(indent=2) }}"
+    dest: "{{ _jool_configuration_directory }}/instances/{{ item.instance }}.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: jool instances reload
+  loop: "{{ jool_instances }}"
+  loop_control:
+    label: "{{ item.instance }}"
+  vars:
+    jool_config: "{% set removed=item.pop('type') %}{{ item }}"
+  register: __task_instance_configuration
+
+- name: push jool instance service environment file
+  ansible.builtin.copy:
+    content: "TYPE={{ _jool_kernel_module[item.type | lower] }}"
+    dest: "{{ _jool_configuration_directory }}/service-environment/{{ item.instance }}.env"
+    owner: root
+    group: root
+    mode: 0644
+  loop: "{{ jool_instances }}"
+  loop_control:
+    label: "{{ item.instance }}"

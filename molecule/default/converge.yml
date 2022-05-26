@@ -1,0 +1,16 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: install basic dependencies in debian based containers
+      ansible.builtin.apt:
+        name:
+          - sudo
+          - iproute2
+          - procps
+          - "linux-headers-{{ ansible_kernel }}"
+        state: present
+      when: ansible_os_family == "Debian"
+    - name: "Include initq.jool"
+      include_role:
+        name: "initq.jool"

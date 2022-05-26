@@ -1,0 +1,33 @@
+---
+- name: systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: jool service enable
+  ansible.builtin.systemd:
+    name: jool.service
+    enabled: true
+
+- name: jool service start
+  ansible.builtin.systemd:
+    name: jool.service
+    state: started
+
+- name: jool service stop
+  ansible.builtin.systemd:
+    name: jool.service
+    state: stopped
+
+- name: jool service restart
+  ansible.builtin.systemd:
+    name: jool.service
+    state: restarted
+
+- name: jool instances reload
+  ansible.builtin.systemd:
+    name: "jool@{{ item.item.instance }}.service"
+    state: reloaded
+  loop: "{{ __task_instance_configuration.results }}"
+  loop_control:
+    label: "jool@{{ item.item.instance }}.service"
+  when: item.changed

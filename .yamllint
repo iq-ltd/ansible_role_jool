@@ -1,0 +1,10 @@
+---
+extends: default
+ignore: |
+ .cache/
+ .git/
+ .venv
+ .github
+rules:
+  line-length:
+    max: 160

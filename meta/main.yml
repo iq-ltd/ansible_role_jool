@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  author: srv6d
+  role_name: jool
+  description: "Jool, an open source SIIT and a NAT64 implementation for Linux."
+  company: Initq
+  issue_tracker_url: https://github.com/iq-ltd/ansible_role_jool/issues
+
+  license: GPL-3.0-only
+
+  min_ansible_version: "2.10"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+
+  galaxy_tags:
+    - jool
+    - nat64
+    - siit
+    - ipv4
+    - ipv6
+    - translation
+    - network
