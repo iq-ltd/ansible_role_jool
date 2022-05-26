@@ -11,6 +11,6 @@
           - "linux-headers-{{ ansible_kernel }}"
         state: present
       when: ansible_os_family == "Debian"
-    - name: "Include initq.jool"
+    - name: "Include srv6d.jool"
       include_role:
-        name: "initq.jool"
+        name: "srv6d.jool"

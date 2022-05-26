@@ -16,8 +16,4 @@ jobs:
       - run: pip3 install pytest-molecule pytest-testinfra
 
       - name: Run Molecule test
-        uses: gofrolist/molecule-action@v2
-        with:
-          molecule_command: test
-        env:
-          ANSIBLE_FORCE_COLOR: "1"
+        uses: robertdebock/molecule-action@4.0.8
