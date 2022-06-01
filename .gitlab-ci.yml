@@ -1,0 +1,36 @@
+---
+default:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python
+
+stages:
+  - Lint
+  - Test
+
+variables:
+  DOCKER_HOST: "tcp://docker:2375"
+  PY_COLORS: 1
+  DOCKER_TLS_CERTDIR: ""
+  GALAXY_USERNAME: "srv6d"
+  GIT_CLONE_PATH: $CI_BUILDS_DIR/$GALAXY_USERNAME.$CI_PROJECT_NAME
+
+yamllint-job:
+  stage: Lint
+  allow_failure: true
+  script:
+    - pip3 install yamllint
+    - yamllint .
+
+ansible-lint-job:
+  stage: Lint
+  allow_failure: true
+  script:
+    - pip3 install ansible-lint
+    - ansible-lint .
+
+molecule-job:
+  stage: Test
+  services:
+    - docker:dind
+  needs: []
+  image: $CI_REGISTRY/docker_containers/molecule:latest
+  script: molecule test
