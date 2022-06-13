@@ -12,22 +12,17 @@ This role will install and configure [Jool](https://www.jool.mx), an Open Source
 
 ## Usage
 
-For each Jool instance, a Systemd instantiated service will be created that can be managed with the service name `"jool@<instance-name>.service"`.
+For each Jool instance, a Systemd service will be created that can be managed with the service name `"jool.<instance-name>.service"`.
 To manage all Jool instances at once, the master service `"jool.service"` can be used.
 
 ## Requirements
 
 This role is tested with the following, but may also work in other environments:
 
-- Ansible >= 2.10
-- Jool Tools >= 4.0.7-1
-- Jool DKMS >= 4.1.5-1
 - Ubuntu
   - 20.04 LTS (Focal Fossa)
 
 ## Known Issues
-
-- On instance addition or deletion, all Jool instances are restarted. For NAT64 instances, this means that the BIB/session database will be dropped.
 
 - The `pool6` argument of an existing NAT64 instance cannot be changed while it is active and doing so will result in an error.
 

@@ -1,18 +1,16 @@
 [Unit]
-Description=Jool Instance "%i"
-ConditionPathExists=/etc/jool/service-environment/%i.env
-ConditionPathExists=/etc/jool/instances/%i.conf
+Description=Jool Instance "{{ instance_name }}"
+ConditionPathExists=/etc/jool/{{ instance_name }}.conf
 PartOf=jool.service
 StopWhenUnneeded=true
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-EnvironmentFile=/etc/jool/service-environment/%i.env
-ExecStartPre=/bin/sh -c "/sbin/modprobe $TYPE"
-ExecStart=/bin/sh -c "/usr/bin/$TYPE file handle /etc/jool/instances/%i.conf"
-ExecReload=/bin/sh -c "/usr/bin/$TYPE file handle /etc/jool/instances/%i.conf"
-ExecStop=/bin/sh -c "/usr/bin/$TYPE -f /etc/jool/instances/%i.conf instance remove"
+ExecStartPre=/bin/sh -c "/sbin/modprobe {{ instance_kernel_module }}"
+ExecStart=/bin/sh -c "/usr/bin/{{ instance_kernel_module }} file handle /etc/jool/{{ instance_name }}.conf"
+ExecReload=/bin/sh -c "/usr/bin/{{ instance_kernel_module }} file handle /etc/jool/{{ instance_name }}.conf"
+ExecStop=/bin/sh -c "/usr/bin/{{ instance_kernel_module }} -f /etc/jool/{{ instance_name }}.conf instance remove"
 
 # Do not modprobe -r; some other instance could be running.
 

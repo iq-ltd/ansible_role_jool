@@ -23,11 +23,8 @@
     name: jool.service
     state: restarted
 
-- name: jool instances reload
+- name: jool instance services start
   ansible.builtin.systemd:
-    name: "jool@{{ item.item.instance }}.service"
-    state: reloaded
-  loop: "{{ __task_instance_configuration.results }}"
-  loop_control:
-    label: "jool@{{ item.item.instance }}.service"
-  when: item.changed
+    name: "{{ item }}"
+    state: started
+  loop: "{{ _jool_instance_services }}"

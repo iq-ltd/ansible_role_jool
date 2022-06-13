@@ -1,26 +1,82 @@
 ---
-- name: push jool instance configuration
+- name: create local temporary Jool instance configuration directory
+  ansible.builtin.tempfile:
+    state: directory
+  changed_when: false
+  register: __tmp_instance_configuration_dir
+  delegate_to: localhost
+
+- name: render local Jool instance configuration directory
   ansible.builtin.copy:
     content: "{{ jool_config | from_yaml | to_nice_json(indent=2) }}"
-    dest: "{{ _jool_configuration_directory }}/instances/{{ item.instance }}.conf"
+    dest: "{{ __tmp_instance_configuration_dir.path }}/{{ item.instance }}.conf"
     owner: root
     group: root
     mode: 0644
-  notify: jool instances reload
+  changed_when: false
   loop: "{{ jool_instances }}"
   loop_control:
     label: "{{ item.instance }}"
   vars:
     jool_config: "{% set removed=item.pop('type') %}{{ item }}"
-  register: __task_instance_configuration
+  delegate_to: localhost
 
-- name: push jool instance service environment file
-  ansible.builtin.copy:
-    content: "TYPE={{ _jool_kernel_module[item.type | lower] }}"
-    dest: "{{ _jool_configuration_directory }}/service-environment/{{ item.instance }}.env"
+- name: push jool systemd instance services
+  ansible.builtin.template:
+    src: "etc/systemd/system/jool.instance.service.j2"
+    dest: "/etc/systemd/system/jool.{{ item.instance }}.service"
     owner: root
     group: root
     mode: 0644
   loop: "{{ jool_instances }}"
   loop_control:
     label: "{{ item.instance }}"
+  notify:
+    - systemd daemon-reload
+    - jool instance services start
+  vars:
+    instance_name: "{{ item.instance }}"
+    instance_kernel_module: "{{ _jool_kernel_module[item.type] }}"
+
+- name: find outdated jool systemd instance services
+  ansible.builtin.find:
+    paths: "/etc/systemd/system"
+    patterns: "jool.*.service"
+    contains: "Jool Instance"
+    file_type: any
+    excludes: "{{ _jool_instance_services }}"
+  register: __jool_stale_instance_services
+
+- name: remove outdated jool systemd instance services
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ __jool_stale_instance_services.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+
+- name: stop outdated jool systemd services
+  ansible.builtin.systemd:
+    name: "{{ item | basename }}"
+    state: stopped
+  loop: "{{ __jool_stale_instance_services.files | map(attribute='path') }}"
+  loop_control:
+    label: "{{ item | basename }}"
+
+- name: push Jool instance configuration directory
+  ansible.builtin.synchronize:
+    src: "{{ __tmp_instance_configuration_dir.path }}/"
+    dest: "{{ _jool_configuration_directory }}"
+    archive: false
+    dirs: true
+    checksum: true
+    delete: true
+  become: true
+  become_user: root
+
+- name: remove local temporary Jool instance configuration directory
+  ansible.builtin.file:
+    path: "{{ __tmp_instance_configuration_dir.path }}"
+    state: absent
+  changed_when: false
+  delegate_to: localhost

@@ -1,8 +1,8 @@
 ---
 _jool_configuration_directory: /etc/jool
-_jool_systemd_service_template_file_path: /etc/systemd/system/jool@.service
 _jool_systemd_service_main_file_path: /etc/systemd/system/jool.service
 _jool_instance_names: "{{ jool_instances | map(attribute='instance') }}"
+_jool_instance_services: "{{ _jool_instance_names | map('regex_replace', '^', 'jool.') | map('regex_replace', '$', '.service')  }}"
 _jool_kernel_module:
   nat64: "jool"
   siit: "jool_siit"
