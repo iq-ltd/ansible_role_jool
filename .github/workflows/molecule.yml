@@ -13,6 +13,8 @@ jobs:
         with:
           python-version: "3.x"
 
+      - run: apt-get install -y rsync
+
       - run: pip3 install pytest-molecule pytest-testinfra
 
       - name: Run Molecule test

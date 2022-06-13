@@ -19,6 +19,7 @@ To manage all Jool instances at once, the master service `"jool.service"` can be
 
 This role is tested with the following, but may also work in other environments:
 
+- Rsync
 - Ubuntu
   - 20.04 LTS (Focal Fossa)
 
